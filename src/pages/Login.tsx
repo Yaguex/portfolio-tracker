@@ -2,10 +2,12 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -47,6 +49,7 @@ const Login = () => {
               extend: true,
               className: {
                 message: 'text-red-600 text-sm',
+                button: 'disabled:opacity-50',
               }
             }}
             theme="light"
@@ -55,7 +58,29 @@ const Login = () => {
                 sign_up: {
                   password_label: 'Password (minimum 6 characters)',
                   email_label: 'Email',
+                  button_label: 'Sign up',
+                },
+                sign_in: {
+                  password_label: 'Password',
+                  email_label: 'Email',
                 }
+              }
+            }}
+            providers={[]}
+            onError={(error) => {
+              console.error('Auth error:', error);
+              if (error.message.includes('body stream already read')) {
+                toast({
+                  variant: "destructive",
+                  title: "Error",
+                  description: "Password invalid, please try a different one.",
+                });
+              } else {
+                toast({
+                  variant: "destructive",
+                  title: "Error",
+                  description: error.message,
+                });
               }
             }}
           />
