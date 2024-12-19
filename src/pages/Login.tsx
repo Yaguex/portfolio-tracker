@@ -2,7 +2,7 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 const Login = () => {
@@ -49,7 +49,6 @@ const Login = () => {
               extend: true,
               className: {
                 message: 'text-red-600 text-sm',
-                button: 'disabled:opacity-50',
               }
             }}
             theme="light"
@@ -59,6 +58,10 @@ const Login = () => {
                   password_label: 'Password (minimum 6 characters)',
                   email_label: 'Email',
                   button_label: 'Sign up',
+                  password_input_placeholder: 'Your password (min 6 characters)',
+                  validation: {
+                    password_too_short: 'Password should be at least 6 characters',
+                  }
                 },
                 sign_in: {
                   password_label: 'Password',
@@ -67,22 +70,6 @@ const Login = () => {
               }
             }}
             providers={[]}
-            onError={(error) => {
-              console.error('Auth error:', error);
-              if (error.message.includes('body stream already read')) {
-                toast({
-                  variant: "destructive",
-                  title: "Error",
-                  description: "Password invalid, please try a different one.",
-                });
-              } else {
-                toast({
-                  variant: "destructive",
-                  title: "Error",
-                  description: error.message,
-                });
-              }
-            }}
           />
         </div>
         <div className="mt-4">
