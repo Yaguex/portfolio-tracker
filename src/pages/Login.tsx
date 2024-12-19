@@ -42,9 +42,30 @@ const Login = () => {
         <div className="mt-8">
           <Auth
             supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
+            appearance={{ 
+              theme: ThemeSupa,
+              extend: true,
+              className: {
+                message: 'text-red-600 text-sm',
+              }
+            }}
             theme="light"
+            localization={{
+              variables: {
+                sign_up: {
+                  password_label: 'Password (minimum 6 characters)',
+                  email_label: 'Email',
+                }
+              }
+            }}
           />
+        </div>
+        <div className="mt-4">
+          <p className="text-sm text-gray-500 text-center">
+            Password requirements:
+            <br />
+            • Minimum 6 characters
+          </p>
         </div>
       </div>
     </div>
