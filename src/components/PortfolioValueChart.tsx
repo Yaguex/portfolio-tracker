@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 
 interface PortfolioValueChartProps {
   data: Array<{
@@ -47,7 +47,6 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
       </CardHeader>
       <CardContent>
         <div className="h-[400px]">
-
           <ResponsiveContainer width="100%" height="100%">
             <LineChart 
               data={formattedData} 
@@ -77,11 +76,13 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
               <Tooltip 
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
+                    const value = payload[0].value as number;
+                    const returnValue = payload[1].value as number;
                     return (
                       <div className="bg-background/95 p-2 border rounded-lg shadow-lg">
                         <p className="text-sm font-medium">{payload[0].payload.formattedDate}</p>
-                        <p className="text-sm">Value: ${payload[0].value.toLocaleString()}</p>
-                        <p className="text-sm">Return: {payload[1].value.toFixed(2)}%</p>
+                        <p className="text-sm">Value: ${value.toLocaleString()}</p>
+                        <p className="text-sm">Return: {returnValue.toFixed(2)}%</p>
                       </div>
                     );
                   }
@@ -106,7 +107,6 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
               />
             </LineChart>
           </ResponsiveContainer>
-
         </div>
       </CardContent>
     </Card>

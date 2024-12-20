@@ -16,6 +16,20 @@ interface PortfolioHistoryTableProps {
   }>;
 }
 
+type RowType = "regular" | "deposit" | "withdraw";
+
+interface FormattedDataRow {
+  type: RowType;
+  date: string;
+  value: number;
+  formattedDate: string;
+  formattedValue: string;
+  momGain: number;
+  momReturn: number;
+  ytdGain: number;
+  ytdReturn: number;
+}
+
 export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
   // Sort data in reverse chronological order
   const sortedData = [...data].sort((a, b) => b.date.localeCompare(a.date));
@@ -35,8 +49,8 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
   const getStartOfYearValue = (date: string) => {
     const currentYear = parse(date, "yyyy-MM", new Date()).getFullYear();
     const startOfYearDate = startOfYear(new Date(currentYear, 0)).toISOString().slice(0, 7);
-    const startOfYearEntry = data.find(entry => entry.date === startOfYearEntry);
-    return startOfYearEntry?.value ?? data[data.length - 1].value;
+    const startOfYearDataEntry = data.find(entry => entry.date === startOfYearDate);
+    return startOfYearDataEntry?.value ?? data[data.length - 1].value;
   };
 
   // Add special transaction rows
@@ -65,7 +79,7 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
 
     return {
       ...entry,
-      type: "regular" as const,
+      type: "regular" as RowType,
       formattedDate: format(parse(entry.date, "yyyy-MM", new Date()), "MMM yyyy"),
       formattedValue: (entry.value < 0 ? "-$" : "$") + Math.abs(entry.value).toLocaleString(),
       momGain: momChanges.gain * artificialMultiplier,
