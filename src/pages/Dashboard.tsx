@@ -1,50 +1,27 @@
 import { MetricsCard } from "@/components/MetricsCard";
-import { PortfolioChart } from "@/components/PortfolioChart";
-import { InvestmentsList } from "@/components/InvestmentsList";
-import { Investment } from "@/types/portfolio";
+import { PortfolioValueChart } from "@/components/PortfolioValueChart";
 
-const MOCK_INVESTMENTS: Investment[] = [
-  {
-    id: "1",
-    symbol: "AAPL",
-    name: "Apple Inc.",
-    quantity: 10,
-    purchasePrice: 150.00,
-    currentPrice: 175.50,
-  },
-  {
-    id: "2",
-    symbol: "GOOGL",
-    name: "Alphabet Inc.",
-    quantity: 5,
-    purchasePrice: 2800.00,
-    currentPrice: 2950.00,
-  },
-  {
-    id: "3",
-    symbol: "MSFT",
-    name: "Microsoft Corporation",
-    quantity: 8,
-    purchasePrice: 280.00,
-    currentPrice: 310.00,
-  },
-];
+const MOCK_DATA = {
+  portfolioValue: 125000,
+  totalGain: 25000,
+  gainPercentage: 25,
+  historicalValues: [
+    { date: '2023-03', value: 85000 },
+    { date: '2023-04', value: 87500 },
+    { date: '2023-05', value: 90000 },
+    { date: '2023-06', value: 95000 },
+    { date: '2023-07', value: 98000 },
+    { date: '2023-08', value: 100000 },
+    { date: '2023-09', value: 105000 },
+    { date: '2023-10', value: 110000 },
+    { date: '2023-11', value: 115000 },
+    { date: '2023-12', value: 118000 },
+    { date: '2024-01', value: 122000 },
+    { date: '2024-02', value: 125000 },
+  ]
+};
 
 const Dashboard = () => {
-  // Calculate portfolio metrics
-  const totalValue = MOCK_INVESTMENTS.reduce(
-    (sum, inv) => sum + inv.quantity * inv.currentPrice,
-    0
-  );
-  
-  const totalCost = MOCK_INVESTMENTS.reduce(
-    (sum, inv) => sum + inv.quantity * inv.purchasePrice,
-    0
-  );
-  
-  const totalGain = totalValue - totalCost;
-  const gainPercentage = (totalGain / totalCost) * 100;
-
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-4xl font-bold mb-8">Investment Portfolio</h1>
@@ -52,31 +29,23 @@ const Dashboard = () => {
       <div className="grid gap-4 md:grid-cols-3 mb-8">
         <MetricsCard
           title="Portfolio Value"
-          value={`$${totalValue.toFixed(2)}`}
+          value={`$${MOCK_DATA.portfolioValue.toLocaleString()}`}
         />
         <MetricsCard
           title="Total Gain/Loss"
-          value={`$${totalGain.toFixed(2)}`}
-          trend={totalGain >= 0 ? "up" : "down"}
+          value={`$${MOCK_DATA.totalGain.toLocaleString()}`}
+          trend={MOCK_DATA.totalGain >= 0 ? "up" : "down"}
         />
         <MetricsCard
           title="Return"
-          value={`${gainPercentage.toFixed(2)}%`}
-          trend={gainPercentage >= 0 ? "up" : "down"}
+          value={`${MOCK_DATA.gainPercentage}%`}
+          trend={MOCK_DATA.gainPercentage >= 0 ? "up" : "down"}
         />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 mb-8">
-        <PortfolioChart investments={MOCK_INVESTMENTS} />
-        <div className="card-gradient rounded-lg p-6">
-          <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
-          <p className="text-muted-foreground">
-            Coming soon: Add investments, Set alerts, and more!
-          </p>
-        </div>
+      <div className="mb-8">
+        <PortfolioValueChart data={MOCK_DATA.historicalValues} />
       </div>
-
-      <InvestmentsList investments={MOCK_INVESTMENTS} />
     </div>
   );
 };
