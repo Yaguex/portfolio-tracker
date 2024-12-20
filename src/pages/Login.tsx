@@ -29,13 +29,13 @@ const Login = () => {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-foreground">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Welcome to Portfolio Tracker
           </h2>
-          <p className="mt-2 text-center text-sm text-muted-foreground">
+          <p className="mt-2 text-center text-sm text-gray-600">
             Sign in to manage your investment portfolio
           </p>
         </div>
@@ -46,13 +46,13 @@ const Login = () => {
               theme: ThemeSupa,
               extend: true,
               className: {
-                message: 'text-destructive text-sm',
-                button: 'bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-muted',
-                input: 'bg-background text-foreground',
-                label: 'text-foreground'
+                message: 'text-red-600 text-sm',
+                button: 'bg-green-500 hover:bg-green-600 text-white disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-300',
+                input: 'bg-white text-gray-900 border-gray-300',
+                label: 'text-gray-700'
               }
             }}
-            theme="dark"
+            theme="light"
             localization={{
               variables: {
                 sign_up: {
@@ -71,7 +71,7 @@ const Login = () => {
           />
         </div>
         <div className="mt-4">
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-sm text-gray-500 text-center">
             Password requirements:
             <br />
             • Minimum 6 characters
