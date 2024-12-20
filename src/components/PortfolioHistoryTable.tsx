@@ -1,5 +1,4 @@
 import { format, parse, startOfYear } from "date-fns";
-import { Edit2, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -9,8 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
 import { EditValueModal } from "./EditValueModal";
+import { AddTransactionModal } from "./AddTransactionModal";
+import { PortfolioTableRow } from "./PortfolioTableRow";
 import { useState } from "react";
 
 interface PortfolioHistoryTableProps {
@@ -36,8 +36,8 @@ interface FormattedDataRow {
 
 export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
   const [editingRow, setEditingRow] = useState<FormattedDataRow | null>(null);
+  const [showAddTransaction, setShowAddTransaction] = useState(false);
 
-  // Sort data in reverse chronological order
   const sortedData = [...data].sort((a, b) => b.date.localeCompare(a.date));
 
   const calculateMoMChange = (currentValue: number, previousValue: number) => {
@@ -113,6 +113,24 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
     }
   });
 
+  const handleEdit = (row: FormattedDataRow) => {
+    setEditingRow(row);
+  };
+
+  const handleSave = (newValue: number) => {
+    console.log("Saving new value:", newValue, "for row:", editingRow);
+    setEditingRow(null);
+  };
+
+  const handleDelete = (row: FormattedDataRow) => {
+    console.log("Delete row:", row);
+  };
+
+  const handleAddTransaction = (newValue: number) => {
+    console.log("Adding transaction:", newValue);
+    setShowAddTransaction(false);
+  };
+
   const formatGain = (value: number) => 
     value < 0 ? `-$${Math.abs(value).toLocaleString()}` : `$${Math.abs(value).toLocaleString()}`;
     
@@ -121,21 +139,6 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
 
   const getValueColor = (value: number) =>
     value > 0 ? "text-green-600" : value < 0 ? "text-red-600" : "";
-
-  const handleEdit = (row: FormattedDataRow) => {
-    setEditingRow(row);
-  };
-
-  const handleSave = (newValue: number) => {
-    console.log("Saving new value:", newValue, "for row:", editingRow);
-    // TODO: Implement save functionality
-    setEditingRow(null);
-  };
-
-  const handleDelete = (row: FormattedDataRow) => {
-    console.log("Delete row:", row);
-    // TODO: Implement delete functionality
-  };
 
   return (
     <>
@@ -160,72 +163,18 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
                 parse(row.date, "yyyy-MM", new Date()).getFullYear() !==
                 parse(formattedData[index + 1].date, "yyyy-MM", new Date()).getFullYear();
 
-              if (row.type === "deposit" || row.type === "withdraw") {
-                const color = row.type === "deposit" ? "text-green-600" : "text-red-600";
-                return (
-                  <TableRow key={row.date} className="group relative border-b">
-                    <TableCell className={color}>{row.formattedDate}</TableCell>
-                    <TableCell className={`text-right ${color}`}>{row.formattedValue}</TableCell>
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell />
-                    <TableCell>
-                      <div className="invisible group-hover:visible absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-blue-500 hover:text-blue-700"
-                          onClick={() => handleEdit(row)}
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-700"
-                          onClick={() => handleDelete(row)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              }
-
               return (
-                <TableRow
+                <PortfolioTableRow
                   key={row.date}
-                  className={`group relative ${isYearChange ? "border-b-2 border-gray-300" : ""}`}
-                >
-                  <TableCell>{row.formattedDate}</TableCell>
-                  <TableCell className="text-right">{row.formattedValue}</TableCell>
-                  <TableCell className={`text-right ${getValueColor(row.momGain)}`}>
-                    {formatGain(row.momGain)}
-                  </TableCell>
-                  <TableCell className={`text-right ${getValueColor(row.momReturn)}`}>
-                    {formatReturn(row.momReturn)}
-                  </TableCell>
-                  <TableCell className={`text-right ${getValueColor(row.ytdGain)}`}>
-                    {formatGain(row.ytdGain)}
-                  </TableCell>
-                  <TableCell className={`text-right ${getValueColor(row.ytdReturn)}`}>
-                    {formatReturn(row.ytdReturn)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="invisible group-hover:visible absolute right-4 top-1/2 -translate-y-1/2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-blue-500 hover:text-blue-700"
-                        onClick={() => handleEdit(row)}
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
+                  row={row}
+                  formatGain={formatGain}
+                  formatReturn={formatReturn}
+                  getValueColor={getValueColor}
+                  onEdit={() => handleEdit(row)}
+                  onDelete={row.type !== "regular" ? () => handleDelete(row) : undefined}
+                  onAddTransaction={() => setShowAddTransaction(true)}
+                  isYearChange={isYearChange}
+                />
               );
             })}
           </TableBody>
@@ -240,6 +189,12 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
           initialValue={editingRow.value}
         />
       )}
+
+      <AddTransactionModal
+        isOpen={showAddTransaction}
+        onClose={() => setShowAddTransaction(false)}
+        onSave={handleAddTransaction}
+      />
     </>
   );
 }
