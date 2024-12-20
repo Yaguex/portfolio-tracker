@@ -25,15 +25,14 @@ export const NavBar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 px-4 py-2 flex justify-between items-center">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-blue-500 border-b border-blue-600 px-4 py-2 flex justify-between items-center">
       <div className="flex items-center">
-        {/* Logo placeholder - replace with actual logo later */}
-        <span className="text-xl font-bold">CashCrafters</span>
+        <span className="text-xl font-bold text-white">CashCrafters</span>
       </div>
 
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="text-white hover:bg-blue-600">
             <Menu className="h-6 w-6" />
           </Button>
         </DropdownMenuTrigger>

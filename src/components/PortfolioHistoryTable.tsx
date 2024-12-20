@@ -1,4 +1,5 @@
 import { format, parse, startOfYear } from "date-fns";
+import { Edit2, Trash2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -8,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 interface PortfolioHistoryTableProps {
   data: Array<{
@@ -116,6 +118,16 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
   const getValueColor = (value: number) =>
     value > 0 ? "text-green-600" : value < 0 ? "text-red-600" : "";
 
+  const handleEdit = (row: FormattedDataRow) => {
+    console.log("Edit row:", row);
+    // TODO: Implement edit functionality
+  };
+
+  const handleDelete = (row: FormattedDataRow) => {
+    console.log("Delete row:", row);
+    // TODO: Implement delete functionality
+  };
+
   return (
     <Card className="card-gradient">
       <Table>
@@ -127,6 +139,7 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
             <TableHead className="text-right">MoM Return</TableHead>
             <TableHead className="text-right">YTD Gain</TableHead>
             <TableHead className="text-right">YTD Return</TableHead>
+            <TableHead className="w-[100px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -140,13 +153,33 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
             if (row.type === "deposit" || row.type === "withdraw") {
               const color = row.type === "deposit" ? "text-green-600" : "text-red-600";
               return (
-                <TableRow key={row.date} className="border-b">
+                <TableRow key={row.date} className="group relative border-b">
                   <TableCell className={color}>{row.formattedDate}</TableCell>
                   <TableCell className={`text-right ${color}`}>{row.formattedValue}</TableCell>
                   <TableCell />
                   <TableCell />
                   <TableCell />
                   <TableCell />
+                  <TableCell>
+                    <div className="invisible group-hover:visible absolute right-4 top-1/2 -translate-y-1/2 flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-blue-500 hover:text-blue-700"
+                        onClick={() => handleEdit(row)}
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-500 hover:text-red-700"
+                        onClick={() => handleDelete(row)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
                 </TableRow>
               );
             }
@@ -154,7 +187,7 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
             return (
               <TableRow
                 key={row.date}
-                className={isYearChange ? "border-b-2 border-gray-300" : ""}
+                className={`group relative ${isYearChange ? "border-b-2 border-gray-300" : ""}`}
               >
                 <TableCell>{row.formattedDate}</TableCell>
                 <TableCell className="text-right">{row.formattedValue}</TableCell>
@@ -169,6 +202,18 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
                 </TableCell>
                 <TableCell className={`text-right ${getValueColor(row.ytdReturn)}`}>
                   {formatReturn(row.ytdReturn)}
+                </TableCell>
+                <TableCell>
+                  <div className="invisible group-hover:visible absolute right-4 top-1/2 -translate-y-1/2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-blue-500 hover:text-blue-700"
+                      onClick={() => handleEdit(row)}
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             );
