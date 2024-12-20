@@ -10,9 +10,14 @@ interface PortfolioValueChartProps {
 }
 
 export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
+  // Filter last 12 months of data and sort chronologically
+  const last12Months = [...data]
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .slice(-12);
+
   // Calculate accumulated returns
-  const startValue = data[0]?.value || 0;
-  const formattedData = data.map(item => {
+  const startValue = last12Months[0]?.value || 0;
+  const formattedData = last12Months.map(item => {
     const accumulatedReturn = ((item.value - startValue) / startValue) * 100;
     return {
       ...item,
@@ -24,7 +29,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
   });
 
   // Calculate min and max values with 10% padding for both axes
-  const values = data.map(item => item.value);
+  const values = last12Months.map(item => item.value);
   const returns = formattedData.map(item => item.accumulatedReturn);
   
   const minValue = Math.min(...values);
@@ -47,27 +52,27 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart 
               data={formattedData} 
-              margin={{ top: 20, right: 60, left: 20, bottom: 20 }}
+              margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
               <XAxis 
                 dataKey="formattedDate"
-                tick={{ fill: 'currentColor' }}
-                tickLine={{ stroke: 'currentColor' }}
+                tick={{ fill: 'rgb(100 116 139)', fontSize: 11 }}
+                tickLine={{ stroke: 'rgb(100 116 139)' }}
               />
               <YAxis 
                 yAxisId="value"
                 domain={valueAxisDomain}
-                tick={{ fill: 'currentColor' }}
-                tickLine={{ stroke: 'currentColor' }}
+                tick={{ fill: 'rgb(100 116 139)', fontSize: 11 }}
+                tickLine={{ stroke: 'rgb(100 116 139)' }}
                 tickFormatter={(value) => `$${(value / 1000)}k`}
               />
               <YAxis 
                 yAxisId="return"
                 orientation="right"
                 domain={returnAxisDomain}
-                tick={{ fill: 'currentColor' }}
-                tickLine={{ stroke: 'currentColor' }}
+                tick={{ fill: 'rgb(100 116 139)', fontSize: 11 }}
+                tickLine={{ stroke: 'rgb(100 116 139)' }}
                 tickFormatter={(value) => `${value.toFixed(1)}%`}
               />
               <Tooltip 
@@ -104,7 +109,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                 yAxisId="value"
                 type="monotone" 
                 dataKey="value" 
-                stroke="#9b87f5" 
+                stroke="#3b82f6" 
                 strokeWidth={2}
                 dot={false}
               />

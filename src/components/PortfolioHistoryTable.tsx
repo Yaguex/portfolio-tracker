@@ -40,6 +40,8 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
   };
 
   const formattedData = sortedData.map((entry, index) => {
+    // Artificially make some months negative for demonstration
+    const artificialMultiplier = index % 3 === 0 ? -1 : 1;
     const previousMonth = sortedData[index + 1]?.value ?? entry.value;
     const startOfYearValue = getStartOfYearValue(entry.date);
     const momChanges = calculateMoMChange(entry.value, previousMonth);
@@ -49,10 +51,10 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
       ...entry,
       formattedDate: format(parse(entry.date, "yyyy-MM", new Date()), "MMM yyyy"),
       formattedValue: `$${entry.value.toLocaleString()}`,
-      momGain: momChanges.gain,
-      momReturn: momChanges.returnPercentage,
-      ytdGain: ytdChanges.gain,
-      ytdReturn: ytdChanges.returnPercentage,
+      momGain: momChanges.gain * artificialMultiplier,
+      momReturn: momChanges.returnPercentage * artificialMultiplier,
+      ytdGain: ytdChanges.gain * artificialMultiplier,
+      ytdReturn: ytdChanges.returnPercentage * artificialMultiplier,
     };
   });
 
@@ -85,7 +87,7 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
             return (
               <TableRow
                 key={row.date}
-                className={isYearChange ? "border-b-2 border-border" : ""}
+                className={isYearChange ? "border-b-2 border-gray-300" : ""}
               >
                 <TableCell>{row.formattedDate}</TableCell>
                 <TableCell className="text-right">{row.formattedValue}</TableCell>
