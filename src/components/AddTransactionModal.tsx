@@ -16,27 +16,17 @@ interface AddTransactionModalProps {
 }
 
 export function AddTransactionModal({ isOpen, onClose, onSave }: AddTransactionModalProps) {
-  const [value, setValue] = useState<number | string>(0);
+  const [value, setValue] = useState<string>('');
 
   const handleSave = () => {
-    onSave(typeof value === 'string' ? 0 : value);
+    const numValue = parseFloat(value);
+    onSave(isNaN(numValue) ? 0 : numValue);
     onClose();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    
-    // Allow empty input or just the minus sign
-    if (inputValue === '' || inputValue === '-') {
-      setValue(inputValue);
-      return;
-    }
-
-    // Parse the input value to a number
-    const numValue = parseFloat(inputValue);
-    if (!isNaN(numValue)) {
-      setValue(numValue);
-    }
+    setValue(inputValue);
   };
 
   return (

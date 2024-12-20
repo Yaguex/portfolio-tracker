@@ -17,27 +17,17 @@ interface EditValueModalProps {
 }
 
 export function EditValueModal({ isOpen, onClose, onSave, initialValue }: EditValueModalProps) {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState<string>(initialValue.toString());
 
   const handleSave = () => {
-    onSave(value);
+    const numValue = parseFloat(value);
+    onSave(isNaN(numValue) ? 0 : numValue);
     onClose();
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = e.target.value;
-    
-    // Allow empty input or just the minus sign
-    if (inputValue === '' || inputValue === '-') {
-      setValue(inputValue === '-' ? 0 : 0);
-      return;
-    }
-
-    // Parse the input value to a number
-    const numValue = parseFloat(inputValue);
-    if (!isNaN(numValue)) {
-      setValue(numValue);
-    }
+    setValue(inputValue);
   };
 
   return (
