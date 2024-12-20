@@ -16,6 +16,13 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
     formattedValue: `$${item.value.toLocaleString()}`
   }));
 
+  // Calculate min and max values with 10% padding
+  const values = data.map(item => item.value);
+  const minValue = Math.min(...values);
+  const maxValue = Math.max(...values);
+  const padding = (maxValue - minValue) * 0.1;
+  const yAxisDomain = [minValue - padding, maxValue + padding];
+
   return (
     <Card className="card-gradient">
       <CardHeader>
@@ -32,6 +39,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                 tickLine={{ stroke: 'currentColor' }}
               />
               <YAxis 
+                domain={yAxisDomain}
                 tick={{ fill: 'currentColor' }}
                 tickLine={{ stroke: 'currentColor' }}
                 tickFormatter={(value) => `$${(value / 1000)}k`}
