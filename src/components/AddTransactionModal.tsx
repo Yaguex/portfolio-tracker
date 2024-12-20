@@ -16,11 +16,27 @@ interface AddTransactionModalProps {
 }
 
 export function AddTransactionModal({ isOpen, onClose, onSave }: AddTransactionModalProps) {
-  const [value, setValue] = useState<number>(0);
+  const [value, setValue] = useState<number | string>(0);
 
   const handleSave = () => {
-    onSave(value);
+    onSave(typeof value === 'string' ? 0 : value);
     onClose();
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    
+    // Allow empty input or just the minus sign
+    if (inputValue === '' || inputValue === '-') {
+      setValue(inputValue);
+      return;
+    }
+
+    // Parse the input value to a number
+    const numValue = parseFloat(inputValue);
+    if (!isNaN(numValue)) {
+      setValue(numValue);
+    }
   };
 
   return (
@@ -32,19 +48,8 @@ export function AddTransactionModal({ isOpen, onClose, onSave }: AddTransactionM
         <div className="py-4">
           <Input
             type="text"
-            inputMode="decimal"
             value={value}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val === "" || val === "-") {
-                setValue(val === "-" ? -0 : 0);
-              } else {
-                const num = parseFloat(val);
-                if (!isNaN(num)) {
-                  setValue(num);
-                }
-              }
-            }}
+            onChange={handleInputChange}
             placeholder="Enter amount (negative for withdrawal)"
           />
         </div>

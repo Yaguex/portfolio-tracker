@@ -24,6 +24,22 @@ export function EditValueModal({ isOpen, onClose, onSave, initialValue }: EditVa
     onClose();
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const inputValue = e.target.value;
+    
+    // Allow empty input or just the minus sign
+    if (inputValue === '' || inputValue === '-') {
+      setValue(inputValue === '-' ? 0 : 0);
+      return;
+    }
+
+    // Parse the input value to a number
+    const numValue = parseFloat(inputValue);
+    if (!isNaN(numValue)) {
+      setValue(numValue);
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
@@ -33,20 +49,9 @@ export function EditValueModal({ isOpen, onClose, onSave, initialValue }: EditVa
         <div className="py-4">
           <Input
             type="text"
-            inputMode="decimal"
             value={value}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val === "" || val === "-") {
-                setValue(val === "-" ? -0 : 0);
-              } else {
-                const num = parseFloat(val);
-                if (!isNaN(num)) {
-                  setValue(num);
-                }
-              }
-            }}
-            placeholder="Enter amount"
+            onChange={handleInputChange}
+            placeholder="Enter amount (negative for withdrawal)"
           />
         </div>
         <DialogFooter>
