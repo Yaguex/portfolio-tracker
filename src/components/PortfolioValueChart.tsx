@@ -21,10 +21,8 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
     const accumulatedReturn = ((item.value - startValue) / startValue) * 100;
     return {
       ...item,
-      formattedDate: format(new Date(item.date), 'MMM yyyy'),
-      formattedValue: `$${item.value.toLocaleString()}`,
-      accumulatedReturn: accumulatedReturn,
-      formattedReturn: `${accumulatedReturn.toFixed(2)}%`
+      formattedDate: format(parse(item.date, "yyyy-MM", new Date()), "MMM yyyy"),
+      accumulatedReturn,
     };
   });
 
@@ -49,6 +47,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
       </CardHeader>
       <CardContent>
         <div className="h-[400px]">
+
           <ResponsiveContainer width="100%" height="100%">
             <LineChart 
               data={formattedData} 
@@ -79,26 +78,10 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="rounded-lg border bg-background p-2 shadow-sm">
-                        <div className="grid gap-2">
-                          <div className="font-semibold">
-                            {payload[0].payload.formattedDate}
-                          </div>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div>
-                              <div className="text-sm text-muted-foreground">Value</div>
-                              <div className="font-medium">
-                                {payload[0].payload.formattedValue}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-sm text-muted-foreground">Return</div>
-                              <div className="font-medium">
-                                {payload[0].payload.formattedReturn}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
+                      <div className="bg-background/95 p-2 border rounded-lg shadow-lg">
+                        <p className="text-sm font-medium">{payload[0].payload.formattedDate}</p>
+                        <p className="text-sm">Value: ${payload[0].value.toLocaleString()}</p>
+                        <p className="text-sm">Return: {payload[1].value.toFixed(2)}%</p>
                       </div>
                     );
                   }
@@ -117,12 +100,13 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                 yAxisId="return"
                 type="monotone" 
                 dataKey="accumulatedReturn" 
-                stroke="#22c55e" 
+                stroke="#9b87f5" 
                 strokeWidth={2}
                 dot={false}
               />
             </LineChart>
           </ResponsiveContainer>
+
         </div>
       </CardContent>
     </Card>

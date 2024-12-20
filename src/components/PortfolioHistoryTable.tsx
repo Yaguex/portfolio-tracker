@@ -35,9 +35,25 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
   const getStartOfYearValue = (date: string) => {
     const currentYear = parse(date, "yyyy-MM", new Date()).getFullYear();
     const startOfYearDate = startOfYear(new Date(currentYear, 0)).toISOString().slice(0, 7);
-    const startOfYearEntry = data.find(entry => entry.date === startOfYearDate);
+    const startOfYearEntry = data.find(entry => entry.date === startOfYearEntry);
     return startOfYearEntry?.value ?? data[data.length - 1].value;
   };
+
+  // Add special transaction rows
+  const specialTransactions = [
+    {
+      type: "deposit" as const,
+      date: "2024-09",
+      value: 20000,
+      position: "2024-10", // Insert before this date
+    },
+    {
+      type: "withdraw" as const,
+      date: "2024-02",
+      value: -15000,
+      position: "2024-03", // Insert before this date
+    },
+  ];
 
   const formattedData = sortedData.map((entry, index) => {
     // Artificially make some months negative for demonstration
@@ -49,8 +65,9 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
 
     return {
       ...entry,
+      type: "regular" as const,
       formattedDate: format(parse(entry.date, "yyyy-MM", new Date()), "MMM yyyy"),
-      formattedValue: `$${entry.value.toLocaleString()}`,
+      formattedValue: (entry.value < 0 ? "-$" : "$") + Math.abs(entry.value).toLocaleString(),
       momGain: momChanges.gain * artificialMultiplier,
       momReturn: momChanges.returnPercentage * artificialMultiplier,
       ytdGain: ytdChanges.gain * artificialMultiplier,
@@ -58,7 +75,27 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
     };
   });
 
-  const formatGain = (value: number) => `$${Math.abs(value).toLocaleString()}`;
+  // Insert special transactions
+  specialTransactions.forEach(transaction => {
+    const insertIndex = formattedData.findIndex(entry => entry.date === transaction.position);
+    if (insertIndex !== -1) {
+      formattedData.splice(insertIndex, 0, {
+        type: transaction.type,
+        date: transaction.date,
+        value: transaction.value,
+        formattedDate: transaction.type.charAt(0).toUpperCase() + transaction.type.slice(1),
+        formattedValue: (transaction.value < 0 ? "-$" : "$") + Math.abs(transaction.value).toLocaleString(),
+        momGain: 0,
+        momReturn: 0,
+        ytdGain: 0,
+        ytdReturn: 0,
+      });
+    }
+  });
+
+  const formatGain = (value: number) => 
+    value < 0 ? `-$${Math.abs(value).toLocaleString()}` : `$${Math.abs(value).toLocaleString()}`;
+    
   const formatReturn = (value: number) => 
     `${value >= 0 ? "+" : "-"}${Math.abs(value).toFixed(2)}%`;
 
@@ -81,8 +118,24 @@ export function PortfolioHistoryTable({ data }: PortfolioHistoryTableProps) {
         <TableBody>
           {formattedData.map((row, index) => {
             const isYearChange = index < formattedData.length - 1 && 
+              row.type === "regular" &&
+              formattedData[index + 1].type === "regular" &&
               parse(row.date, "yyyy-MM", new Date()).getFullYear() !==
               parse(formattedData[index + 1].date, "yyyy-MM", new Date()).getFullYear();
+
+            if (row.type === "deposit" || row.type === "withdraw") {
+              const color = row.type === "deposit" ? "text-green-600" : "text-red-600";
+              return (
+                <TableRow key={row.date} className="border-b">
+                  <TableCell className={color}>{row.formattedDate}</TableCell>
+                  <TableCell className={`text-right ${color}`}>{row.formattedValue}</TableCell>
+                  <TableCell />
+                  <TableCell />
+                  <TableCell />
+                  <TableCell />
+                </TableRow>
+              );
+            }
 
             return (
               <TableRow
