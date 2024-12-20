@@ -1,29 +1,32 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
+import { ArrowDownIcon, ArrowUpIcon } from "lucide-react";
 
 interface MetricsCardProps {
   title: string;
   value: string;
-  className?: string;
   trend?: "up" | "down";
 }
 
-export function MetricsCard({ title, value, className, trend }: MetricsCardProps) {
+export function MetricsCard({ title, value, trend }: MetricsCardProps) {
   return (
-    <Card className={cn("card-gradient card-hover", className)}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">
-          {value}
-          {trend && (
-            <span className={trend === "up" ? "text-green-500 ml-2" : "text-red-500 ml-2"}>
-              {trend === "up" ? "↑" : "↓"}
-            </span>
-          )}
-        </div>
-      </CardContent>
+    <Card className="card-gradient p-6">
+      <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
+      <div className="mt-2 flex items-center justify-between">
+        <div className="text-2xl font-bold">{value}</div>
+        {trend && (
+          <div
+            className={`flex items-center ${
+              trend === "up" ? "text-green-600" : "text-red-600"
+            }`}
+          >
+            {trend === "up" ? (
+              <ArrowUpIcon className="h-4 w-4" />
+            ) : (
+              <ArrowDownIcon className="h-4 w-4" />
+            )}
+          </div>
+        )}
+      </div>
     </Card>
   );
 }
