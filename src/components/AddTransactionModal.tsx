@@ -31,9 +31,20 @@ export function AddTransactionModal({ isOpen, onClose, onSave }: AddTransactionM
         </DialogHeader>
         <div className="py-4">
           <Input
-            type="number"
+            type="text"
+            inputMode="decimal"
             value={value}
-            onChange={(e) => setValue(Number(e.target.value))}
+            onChange={(e) => {
+              const val = e.target.value;
+              if (val === "" || val === "-") {
+                setValue(val === "-" ? -0 : 0);
+              } else {
+                const num = parseFloat(val);
+                if (!isNaN(num)) {
+                  setValue(num);
+                }
+              }
+            }}
             placeholder="Enter amount (negative for withdrawal)"
           />
         </div>
