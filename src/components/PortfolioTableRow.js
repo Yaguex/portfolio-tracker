@@ -1,0 +1,6 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+import { TableCell, TableRow, } from "@/components/ui/table";
+import { TableActionButtons } from "./TableActionButtons";
+export function PortfolioTableRow({ row, formatGain, formatReturn, getValueColor, onEdit, isYearChange, }) {
+    return (_jsxs(TableRow, { className: `group relative ${isYearChange ? "border-b-2 border-gray-300" : ""}`, children: [_jsx(TableCell, { children: row.formattedDate }), _jsx(TableCell, { className: "text-right", children: row.formattedValue }), _jsx(TableCell, { className: `text-right ${getValueColor(parseFloat(row.formattedNetFlow.replace(/[^0-9.-]/g, '')))}`, children: row.formattedNetFlow }), _jsx(TableCell, { className: `text-right ${getValueColor(row.momGain || 0)}`, children: formatGain(row.momGain || 0) }), _jsx(TableCell, { className: `text-right ${getValueColor(row.momReturn || 0)}`, children: formatReturn(row.momReturn || 0) }), _jsx(TableCell, { className: `text-right ${getValueColor(row.ytdGain || 0)}`, children: formatGain(row.ytdGain || 0) }), _jsx(TableCell, { className: `text-right ${getValueColor(row.ytdReturn || 0)}`, children: formatReturn(row.ytdReturn || 0) }), _jsx(TableCell, { children: _jsx(TableActionButtons, { onEdit: onEdit }) })] }));
+}

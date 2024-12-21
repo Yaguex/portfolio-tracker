@@ -11,7 +11,7 @@
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": true,
+    "emitDeclarationOnly": true,  // Required for allowImportingTsExtensions
     "jsx": "react-jsx",
 
     /* Linting */
@@ -24,7 +24,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+
+    /* Incremental build support */
+    "composite": true
   },
   "include": ["src"]
 }
