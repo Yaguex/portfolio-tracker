@@ -40,10 +40,11 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
   
-  // Calculate padding as 10% of the actual values, not the range
-  const topPadding = maxValue * 0.1;
-  const bottomPadding = minValue * 0.1;
-  const yAxisDomain = [minValue - bottomPadding, maxValue + topPadding];
+  // Calculate padding as 10% of min and max values
+  const yAxisDomain = [
+    minValue - (minValue * 0.1), // 10% below lowest value
+    maxValue + (maxValue * 0.1)  // 10% above highest value
+  ];
 
   return (
     <Card className="card-gradient">
@@ -77,7 +78,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                   key={index}
                   x={date}
                   yAxisId="value"
-                  stroke="rgb(156 163 175)"
+                  stroke="rgb(100 116 139)"
                   strokeDasharray="3 3"
                 />
               ))}
