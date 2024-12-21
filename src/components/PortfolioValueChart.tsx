@@ -39,8 +39,8 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
   const values = last12Months.map(item => item.value);
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
-  const valuePadding = (maxValue - minValue) * 0.1;
-  const valueAxisDomain = [minValue - valuePadding, maxValue + valuePadding];
+  const padding = (maxValue - minValue) * 0.1;
+  const yAxisDomain = [minValue - padding, maxValue + padding];
 
   return (
     <Card className="card-gradient">
@@ -59,12 +59,14 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                 dataKey="formattedDate"
                 tick={{ fill: 'rgb(100 116 139)', fontSize: 11 }}
                 tickLine={{ stroke: 'rgb(100 116 139)' }}
+                axisLine={{ stroke: 'rgb(100 116 139)' }}
               />
               <YAxis 
                 yAxisId="value"
-                domain={valueAxisDomain}
+                domain={yAxisDomain}
                 tick={{ fill: 'rgb(100 116 139)', fontSize: 11 }}
                 tickLine={{ stroke: 'rgb(100 116 139)' }}
+                axisLine={{ stroke: 'rgb(100 116 139)' }}
                 tickFormatter={(value) => `$${(value / 1000)}k`}
               />
               {yearChanges.map((date, index) => (
