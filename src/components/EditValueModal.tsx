@@ -31,8 +31,8 @@ export function EditValueModal({
     const numValue = parseFloat(value);
     const numNetFlow = parseFloat(netFlow);
     onSave(
-      isNaN(numValue) ? 0 : numValue,
-      isNaN(numNetFlow) ? 0 : numNetFlow
+      isNaN(numValue) ? initialValue : numValue,
+      isNaN(numNetFlow) ? initialNetFlow : numNetFlow
     );
     onClose();
   };
