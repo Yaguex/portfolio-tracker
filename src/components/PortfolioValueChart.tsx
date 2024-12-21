@@ -1,50 +1,23 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { format, parse } from 'date-fns';
+import { ChartTooltip } from "./ChartTooltip";
+import { ChartDataPoint, formatChartData, findYearChanges, calculateYAxisDomain } from "@/utils/chartDataUtils";
 
 interface PortfolioValueChartProps {
-  data: Array<{
-    date: string;
-    value: number;
-  }>;
+  data: ChartDataPoint[];
 }
 
 export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
-  const last12Months = [...data]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(-12);
+  const formattedData = formatChartData(data);
+  const yearChanges = findYearChanges(formattedData);
+  const values = formattedData.map(item => item.value);
+  const yAxisDomain = calculateYAxisDomain(values);
 
-  const startValue = last12Months[0]?.value || 0;
-  const formattedData = last12Months.map(item => {
-    const accumulatedReturn = ((item.value - startValue) / startValue) * 100;
-    return {
-      ...item,
-      formattedDate: format(parse(item.date, "yyyy-MM", new Date()), "MMM yyyy"),
-      accumulatedReturn,
-    };
-  });
-
-  // Find year changes
-  const yearChanges = formattedData.reduce((acc: string[], item, index) => {
-    if (index > 0) {
-      const currentYear = parse(item.date, "yyyy-MM", new Date()).getFullYear();
-      const prevYear = parse(formattedData[index - 1].date, "yyyy-MM", new Date()).getFullYear();
-      if (currentYear !== prevYear) {
-        acc.push(item.formattedDate);
-      }
-    }
-    return acc;
-  }, []);
-
-  const values = last12Months.map(item => item.value);
-  const minValue = Math.min(...values);
-  const maxValue = Math.max(...values);
-  
-  // Calculate padding as 10% of min and max values
-  const yAxisDomain = [
-    minValue - (minValue * 0.1), // 10% below lowest value
-    maxValue + (maxValue * 0.1)  // 10% above highest value
-  ];
+  const axisStyle = {
+    tick: { fill: 'rgb(100 116 139)', fontSize: 11 },
+    tickLine: { stroke: 'rgb(100 116 139)' },
+    axisLine: { stroke: 'rgb(100 116 139)' }
+  };
 
   return (
     <Card className="card-gradient">
@@ -61,16 +34,12 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
               <XAxis 
                 dataKey="formattedDate"
-                tick={{ fill: 'rgb(100 116 139)', fontSize: 11 }}
-                tickLine={{ stroke: 'rgb(100 116 139)' }}
-                axisLine={{ stroke: 'rgb(100 116 139)' }}
+                {...axisStyle}
               />
               <YAxis 
                 yAxisId="value"
                 domain={yAxisDomain}
-                tick={{ fill: 'rgb(100 116 139)', fontSize: 11 }}
-                tickLine={{ stroke: 'rgb(100 116 139)' }}
-                axisLine={{ stroke: 'rgb(100 116 139)' }}
+                {...axisStyle}
                 tickFormatter={(value) => `$${(value / 1000)}k`}
               />
               {yearChanges.map((date, index) => (
@@ -82,22 +51,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                   strokeDasharray="3 3"
                 />
               ))}
-              <Tooltip 
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    const value = payload[0].value as number;
-                    const returnValue = payload[1].value as number;
-                    return (
-                      <div className="bg-background/95 p-2 border rounded-lg shadow-lg">
-                        <p className="text-sm font-medium">{payload[0].payload.formattedDate}</p>
-                        <p className="text-sm">Value: ${value.toLocaleString()}</p>
-                        <p className="text-sm">Return: {returnValue.toFixed(2)}%</p>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
+              <Tooltip content={ChartTooltip} />
               <Line 
                 yAxisId="value"
                 type="monotone" 
