@@ -55,12 +55,12 @@ const Dashboard = () => {
           value={`$${MOCK_DATA.portfolioValue.toLocaleString()}`}
         />
         <MetricsCard
-          title="Total Gain/Loss"
+          title="YTD Gain"
           value={`$${MOCK_DATA.totalGain.toLocaleString()}`}
           trend={MOCK_DATA.totalGain >= 0 ? "up" : "down"}
         />
         <MetricsCard
-          title="Return"
+          title="YTD Return"
           value={`${MOCK_DATA.gainPercentage}%`}
           trend={MOCK_DATA.gainPercentage >= 0 ? "up" : "down"}
         />
