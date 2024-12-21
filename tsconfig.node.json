@@ -10,13 +10,18 @@
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
-    "noEmit": true,
 
     /* Linting */
     "strict": true,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+
+    /* Required for project references */
+    "composite": true,
+    "declaration": true, // Allow emitting .d.ts files
+    "declarationMap": true, // Useful for debugging .d.ts
+    "emitDeclarationOnly": true // Ensure only declarations are emitted
   },
   "include": ["vite.config.ts"]
 }

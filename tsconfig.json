@@ -9,17 +9,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "noImplicitAny": false,
-    "noUnusedParameters": false,
     "skipLibCheck": true,
-    "allowJs": true,
-    "noUnusedLocals": false,
-    "strictNullChecks": false,
-    "module": "commonjs",
-    "target": "es2020",
-    "esModuleInterop": true,
-    "strict": true,
-    "outDir": "./dist"
+    "strict": true
   },
   "include": ["src/**/*", "*.ts"]
 }
