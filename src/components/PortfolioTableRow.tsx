@@ -34,7 +34,7 @@ export function PortfolioTableRow({
     <TableRow className={`group relative ${isYearChange ? "border-b-2 border-gray-300" : ""}`}>
       <TableCell>{row.formattedDate}</TableCell>
       <TableCell className="text-right">{row.formattedValue}</TableCell>
-      <TableCell className={`text-right ${getValueColor(parseFloat(row.formattedNetFlow.replace(/[^0-9.-]/g, '')))}`)}>
+      <TableCell className={`text-right ${getValueColor(parseFloat(row.formattedNetFlow.replace(/[^0-9.-]/g, '')))}`}>
         {row.formattedNetFlow}
       </TableCell>
       <TableCell className={`text-right ${getValueColor(row.momGain || 0)}`}>
