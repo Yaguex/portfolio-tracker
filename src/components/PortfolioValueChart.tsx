@@ -71,6 +71,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                 <ReferenceLine
                   key={index}
                   x={date}
+                  yAxisId="value"
                   stroke="rgb(156 163 175)"
                   strokeDasharray="3 3"
                 />
