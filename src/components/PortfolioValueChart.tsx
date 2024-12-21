@@ -59,18 +59,13 @@ export const PortfolioValueChart = ({ data }: Props) => {
     const data = payload[0].payload;
     
     return (
-      <HoverCard>
-        <HoverCardTrigger asChild>
-          <div className="w-2 h-2 bg-blue-500 rounded-full" />
-        </HoverCardTrigger>
-        <HoverCardContent className="w-64">
-          <div className="space-y-2">
-            <p className="text-sm font-medium">{data.formattedDate}</p>
-            <p className="text-sm">Value: {data.formattedValue}</p>
-            <p className="text-sm">YTD Return: {data.formattedYtdReturn}</p>
-          </div>
-        </HoverCardContent>
-      </HoverCard>
+      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 min-w-[200px]">
+        <div className="space-y-2">
+          <p className="text-sm font-medium">{data.formattedDate}</p>
+          <p className="text-sm">Value: {data.formattedValue}</p>
+          <p className="text-sm">YTD Return: {data.formattedYtdReturn}</p>
+        </div>
+      </div>
     );
   };
 
