@@ -14,6 +14,12 @@
     "skipLibCheck": true,
     "allowJs": true,
     "noUnusedLocals": false,
-    "strictNullChecks": false
-  }
+    "strictNullChecks": false,
+    "module": "commonjs",
+    "target": "es2020",
+    "esModuleInterop": true,
+    "strict": true,
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*", "*.ts"]
 }
