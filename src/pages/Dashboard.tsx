@@ -4,8 +4,6 @@ import { PortfolioValueChart } from "@/components/PortfolioValueChart";
 
 const MOCK_DATA = {
   portfolioValue: 125000,
-  totalGain: 25000,
-  gainPercentage: 25,
   historicalValues: [
     { date: '2024-04', value: 125000 },
     { date: '2024-03', value: 122000 },
@@ -45,6 +43,18 @@ const MOCK_DATA = {
 };
 
 const Dashboard = () => {
+  // Get the latest month's data (first entry in sorted data)
+  const latestMonthData = [...MOCK_DATA.historicalValues]
+    .sort((a, b) => b.date.localeCompare(a.date))[0];
+
+  // Calculate YTD values for the latest month
+  const startOfYearValue = MOCK_DATA.historicalValues.find(
+    entry => entry.date === `${new Date().getFullYear()}-01`
+  )?.value ?? latestMonthData.value;
+
+  const ytdGain = latestMonthData.value - startOfYearValue;
+  const ytdReturn = ((ytdGain / startOfYearValue) * 100);
+
   return (
     <div className="container mx-auto py-4 px-4">
       <h1 className="text-4xl font-bold mb-8">Dashboard</h1>
@@ -56,13 +66,15 @@ const Dashboard = () => {
         />
         <MetricsCard
           title="YTD Gain"
-          value={`$${MOCK_DATA.totalGain.toLocaleString()}`}
-          trend={MOCK_DATA.totalGain >= 0 ? "up" : "down"}
+          value={`${ytdGain >= 0 ? '+' : '-'}$${Math.abs(ytdGain).toLocaleString()}`}
+          trend={ytdGain >= 0 ? "up" : "down"}
+          valueColor={ytdGain >= 0 ? "text-green-600" : "text-red-600"}
         />
         <MetricsCard
           title="YTD Return"
-          value={`${MOCK_DATA.gainPercentage}%`}
-          trend={MOCK_DATA.gainPercentage >= 0 ? "up" : "down"}
+          value={`${ytdReturn >= 0 ? '+' : ''}${ytdReturn.toFixed(2)}%`}
+          trend={ytdReturn >= 0 ? "up" : "down"}
+          valueColor={ytdReturn >= 0 ? "text-green-600" : "text-red-600"}
         />
       </div>
 

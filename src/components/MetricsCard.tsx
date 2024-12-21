@@ -5,14 +5,15 @@ interface MetricsCardProps {
   title: string;
   value: string;
   trend?: "up" | "down";
+  valueColor?: string;
 }
 
-export function MetricsCard({ title, value, trend }: MetricsCardProps) {
+export function MetricsCard({ title, value, trend, valueColor }: MetricsCardProps) {
   return (
     <Card className="card-gradient p-6">
       <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
       <div className="mt-2 flex items-center justify-between">
-        <div className="text-2xl font-bold">{value}</div>
+        <div className={`text-2xl font-bold ${valueColor}`}>{value}</div>
         {trend && (
           <div
             className={`flex items-center ${
