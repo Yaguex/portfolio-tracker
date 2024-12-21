@@ -1,5 +1,4 @@
 import { MetricsCard } from "@/components/MetricsCard";
-import { PortfolioValueChart } from "@/components/PortfolioValueChart";
 import { PortfolioHistoryTable } from "@/components/PortfolioHistoryTable";
 
 const MOCK_DATA = {
@@ -71,10 +70,6 @@ const Dashboard = () => {
           value={`${MOCK_DATA.gainPercentage}%`}
           trend={MOCK_DATA.gainPercentage >= 0 ? "up" : "down"}
         />
-      </div>
-
-      <div className="mb-8">
-        <PortfolioValueChart data={MOCK_DATA.historicalValues} />
       </div>
 
       <div className="mb-8">
