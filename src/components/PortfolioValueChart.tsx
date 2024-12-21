@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { format, parse } from 'date-fns';
 
 interface PortfolioValueChartProps {
@@ -10,12 +10,10 @@ interface PortfolioValueChartProps {
 }
 
 export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
-  // Filter last 12 months of data and sort chronologically
   const last12Months = [...data]
     .sort((a, b) => a.date.localeCompare(b.date))
     .slice(-12);
 
-  // Calculate accumulated returns
   const startValue = last12Months[0]?.value || 0;
   const formattedData = last12Months.map(item => {
     const accumulatedReturn = ((item.value - startValue) / startValue) * 100;
@@ -26,19 +24,23 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
     };
   });
 
-  // Calculate min and max values with 10% padding for both axes
+  // Find year changes
+  const yearChanges = formattedData.reduce((acc: string[], item, index) => {
+    if (index > 0) {
+      const currentYear = parse(item.date, "yyyy-MM", new Date()).getFullYear();
+      const prevYear = parse(formattedData[index - 1].date, "yyyy-MM", new Date()).getFullYear();
+      if (currentYear !== prevYear) {
+        acc.push(item.formattedDate);
+      }
+    }
+    return acc;
+  }, []);
+
   const values = last12Months.map(item => item.value);
-  const returns = formattedData.map(item => item.accumulatedReturn);
-  
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
   const valuePadding = (maxValue - minValue) * 0.1;
   const valueAxisDomain = [minValue - valuePadding, maxValue + valuePadding];
-
-  const minReturn = Math.min(...returns);
-  const maxReturn = Math.max(...returns);
-  const returnPadding = (maxReturn - minReturn) * 0.1;
-  const returnAxisDomain = [minReturn - returnPadding, maxReturn + returnPadding];
 
   return (
     <Card className="card-gradient">
@@ -65,14 +67,14 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                 tickLine={{ stroke: 'rgb(100 116 139)' }}
                 tickFormatter={(value) => `$${(value / 1000)}k`}
               />
-              <YAxis 
-                yAxisId="return"
-                orientation="right"
-                domain={returnAxisDomain}
-                tick={{ fill: 'rgb(100 116 139)', fontSize: 11 }}
-                tickLine={{ stroke: 'rgb(100 116 139)' }}
-                tickFormatter={(value) => `${value.toFixed(1)}%`}
-              />
+              {yearChanges.map((date, index) => (
+                <ReferenceLine
+                  key={index}
+                  x={date}
+                  stroke="rgb(156 163 175)"
+                  strokeDasharray="3 3"
+                />
+              ))}
               <Tooltip 
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
@@ -98,7 +100,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                 dot={false}
               />
               <Line 
-                yAxisId="return"
+                yAxisId="value"
                 type="monotone" 
                 dataKey="accumulatedReturn" 
                 stroke="#9b87f5" 

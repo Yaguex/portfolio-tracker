@@ -27,7 +27,7 @@ export const NavBar = () => {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-blue-500 border-b border-blue-600 px-4 py-2 flex justify-between items-center">
       <div className="flex items-center">
-        <span className="text-xl font-bold text-white">CashCrafters</span>
+        <span className="text-xl font-bold text-white">Investment Portfolio</span>
       </div>
 
       <DropdownMenu>

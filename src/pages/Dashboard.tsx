@@ -54,7 +54,7 @@ const MOCK_DATA = {
 const Dashboard = () => {
   return (
     <div className="container mx-auto py-4 px-4">
-      <h1 className="text-4xl font-bold mb-8">Investment Portfolio</h1>
+      <h1 className="text-4xl font-bold mb-8">Dashboard</h1>
       
       <div className="grid gap-4 md:grid-cols-3 mb-8">
         <MetricsCard
