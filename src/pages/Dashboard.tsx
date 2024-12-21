@@ -1,30 +1,24 @@
 import { MetricsCard } from "@/components/MetricsCard";
 import { PortfolioHistoryTable } from "@/components/PortfolioHistoryTable";
+import { PortfolioValueChart } from "@/components/PortfolioValueChart";
 
 const MOCK_DATA = {
   portfolioValue: 125000,
   totalGain: 25000,
   gainPercentage: 25,
   historicalValues: [
-    { date: '2024-11', value: 125000 },
-    { date: '2024-10', value: 122000 },
-    { date: '2024-09', value: 118000 },
-    { date: '2024-08', value: 115000 },
-    { date: '2024-07', value: 110000 },
-    { date: '2024-06', value: 105000 },
-    { date: '2024-05', value: 100000 },
-    { date: '2024-04', value: 98000 },
-    { date: '2024-03', value: 95000 },
-    { date: '2024-02', value: 90000 },
-    { date: '2024-01', value: 87500 },
-    { date: '2023-12', value: 85000 },
-    { date: '2023-11', value: 82000 },
-    { date: '2023-10', value: 80000 },
-    { date: '2023-09', value: 78000 },
-    { date: '2023-08', value: 75000 },
-    { date: '2023-07', value: 72000 },
-    { date: '2023-06', value: 70000 },
-    { date: '2023-05', value: 68000 },
+    { date: '2024-04', value: 125000 },
+    { date: '2024-03', value: 122000 },
+    { date: '2024-02', value: 118000 },
+    { date: '2024-01', value: 115000 },
+    { date: '2023-12', value: 110000 },
+    { date: '2023-11', value: 105000 },
+    { date: '2023-10', value: 100000 },
+    { date: '2023-09', value: 98000 },
+    { date: '2023-08', value: 95000 },
+    { date: '2023-07', value: 90000 },
+    { date: '2023-06', value: 87500 },
+    { date: '2023-05', value: 85000 },
     { date: '2023-04', value: 65000 },
     { date: '2023-03', value: 62000 },
     { date: '2023-02', value: 60000 },
@@ -70,6 +64,10 @@ const Dashboard = () => {
           value={`${MOCK_DATA.gainPercentage}%`}
           trend={MOCK_DATA.gainPercentage >= 0 ? "up" : "down"}
         />
+      </div>
+
+      <div className="mb-8">
+        <PortfolioValueChart data={MOCK_DATA.historicalValues} />
       </div>
 
       <div className="mb-8">
