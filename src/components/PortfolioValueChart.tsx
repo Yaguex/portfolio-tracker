@@ -49,6 +49,7 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                   yAxisId="value"
                   stroke="rgb(100 116 139)"
                   strokeDasharray="3 3"
+                  className="stroke-muted"
                 />
               ))}
               <Tooltip content={ChartTooltip} />

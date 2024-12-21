@@ -43,9 +43,11 @@ export const findYearChanges = (data: FormattedChartDataPoint[]): string[] => {
 export const calculateYAxisDomain = (values: number[]): [number, number] => {
   const minValue = Math.min(...values);
   const maxValue = Math.max(...values);
+  const range = maxValue - minValue;
+  const padding = range * 0.1;
   
   return [
-    minValue - (minValue * 0.1),
-    maxValue + (maxValue * 0.1)
+    minValue - padding,
+    maxValue + padding
   ];
 };
