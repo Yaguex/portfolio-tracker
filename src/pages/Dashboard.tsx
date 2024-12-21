@@ -1,89 +1,164 @@
+import React, { useEffect, useState } from 'react';
 import { MetricsCard } from "@/components/MetricsCard";
 import { PortfolioHistoryTable } from "@/components/PortfolioHistoryTable";
 import { PortfolioValueChart } from "@/components/PortfolioValueChart";
+import { supabase } from "../supabaseClient";
 
-const MOCK_DATA = {
-  portfolioValue: 125000,
-  historicalValues: [
-    { date: '2024-04', value: 125000 },
-    { date: '2024-03', value: 122000 },
-    { date: '2024-02', value: 118000 },
-    { date: '2024-01', value: 115000 },
-    { date: '2023-12', value: 110000 },
-    { date: '2023-11', value: 105000 },
-    { date: '2023-10', value: 100000 },
-    { date: '2023-09', value: 98000 },
-    { date: '2023-08', value: 95000 },
-    { date: '2023-07', value: 90000 },
-    { date: '2023-06', value: 87500 },
-    { date: '2023-05', value: 85000 },
-    { date: '2023-04', value: 65000 },
-    { date: '2023-03', value: 62000 },
-    { date: '2023-02', value: 60000 },
-    { date: '2023-01', value: 58000 },
-    { date: '2022-12', value: 55000 },
-    { date: '2022-11', value: 52000 },
-    { date: '2022-10', value: 50000 },
-    { date: '2022-09', value: 48000 },
-    { date: '2022-08', value: 45000 },
-    { date: '2022-07', value: 42000 },
-    { date: '2022-06', value: 40000 },
-    { date: '2022-05', value: 38000 },
-    { date: '2022-04', value: 35000 },
-    { date: '2022-03', value: 32000 },
-    { date: '2022-02', value: 30000 },
-    { date: '2022-01', value: 28000 },
-    { date: '2021-12', value: 25000 },
-    { date: '2021-11', value: 22000 },
-    { date: '2021-10', value: 20000 },
-    { date: '2021-09', value: 18000 },
-    { date: '2021-08', value: 15000 },
-    { date: '2021-07', value: 12000 },
-  ]
-};
+interface MonthlyData {
+  id: number;
+  month: string; // YYYY-MM-DD format
+  balance: number;
+  flows: number;
+  mom_gain: number;
+  mom_return: number;
+  ytd_gain: number;
+  ytd_return: number;
+}
 
 const Dashboard = () => {
-  // Get the latest month's data (first entry in sorted data)
-  const latestMonthData = [...MOCK_DATA.historicalValues]
-    .sort((a, b) => b.date.localeCompare(a.date))[0];
+  const [monthlyData, setMonthlyData] = useState<MonthlyData[]>([]);
+  const [portfolios, setPortfolios] = useState<{ id: string; name: string }[]>([]);
+  const [selectedPortfolioId, setSelectedPortfolioId] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPortfoliosAndData = async () => {
+      setLoading(true);
+      setError(null);
+
+      try {
+        // Fetch the authenticated user's session
+        const { data: { session } } = await supabase.auth.getSession();
+        const userId = session?.user?.id;
+
+        if (!userId) {
+          setError("User not authenticated");
+          setLoading(false);
+          return;
+        }
+
+        // Fetch portfolios linked to the user
+        const { data: portfolios, error: portfolioError } = await supabase
+          .from("portfolios")
+          .select("id, name")
+          .eq("user_id", userId);
+
+        console.log("Fetched portfolios:", portfolios); // Log portfolios fetched
+
+        if (portfolioError) {
+          throw new Error(portfolioError.message);
+        }
+
+        setPortfolios(portfolios || []);
+        if (portfolios?.length && !selectedPortfolioId) {
+          setSelectedPortfolioId(portfolios[0].id); // Select the first portfolio by default
+        }
+
+        // Fetch monthly data for the selected portfolio
+        if (selectedPortfolioId) {
+          const { data: monthlyData, error: dataError } = await supabase
+            .from("monthly_portfolio_data")
+            .select("*")
+            .eq("portfolio_id", selectedPortfolioId)
+            .order("month", { ascending: true });
+
+          console.log("Fetched monthly data:", monthlyData); // Log monthly data fetched
+
+          if (dataError) {
+            throw new Error(dataError.message);
+          }
+
+          setMonthlyData(monthlyData || []);
+        }
+      } catch (err) {
+        console.error("Error fetching data:", err.message); // Log error messages
+        setError(err.message || "An error occurred while fetching data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPortfoliosAndData();
+  }, [selectedPortfolioId]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div className="text-red-600">Error: {error}</div>;
+  }
+
+  // Get the latest month's data (last entry in monthlyData)
+  const latestMonthData = monthlyData[monthlyData.length - 1];
 
   // Calculate YTD values for the latest month
-  const startOfYearValue = MOCK_DATA.historicalValues.find(
-    entry => entry.date === `${new Date().getFullYear()}-01`
-  )?.value ?? latestMonthData.value;
+  const startOfYearData = monthlyData.find(
+    (entry) => entry.month.startsWith(`${new Date().getFullYear()}-01`)
+  );
 
-  const ytdGain = latestMonthData.value - startOfYearValue;
-  const ytdReturn = ((ytdGain / startOfYearValue) * 100);
+  const ytdGain = latestMonthData
+    ? latestMonthData.ytd_gain
+    : startOfYearData
+    ? latestMonthData.balance - startOfYearData.balance
+    : 0;
+
+  const ytdReturn = latestMonthData ? latestMonthData.ytd_return : 0;
 
   return (
     <div className="container mx-auto py-4 px-4">
       <h1 className="text-4xl font-bold mb-8">Dashboard</h1>
-      
+
+      {/* Portfolio Selector */}
+      <div className="mb-4">
+        <label htmlFor="portfolio-select" className="block text-sm font-medium text-gray-700">
+          Select Portfolio
+        </label>
+        <select
+          id="portfolio-select"
+          value={selectedPortfolioId || ""}
+          onChange={(e) => setSelectedPortfolioId(e.target.value)}
+          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
+        >
+          {portfolios.map((portfolio) => (
+            <option key={portfolio.id} value={portfolio.id}>
+              {portfolio.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-3 mb-8">
         <MetricsCard
           title="Portfolio Value"
-          value={`$${MOCK_DATA.portfolioValue.toLocaleString()}`}
+          value={`$${latestMonthData?.balance.toLocaleString() || "0"}`}
         />
         <MetricsCard
           title="YTD Gain"
-          value={`${ytdGain >= 0 ? '+' : '-'}$${Math.abs(ytdGain).toLocaleString()}`}
+          value={`$${ytdGain.toLocaleString() || "0"}`}
           trend={ytdGain >= 0 ? "up" : "down"}
           valueColor={ytdGain >= 0 ? "text-green-600" : "text-red-600"}
         />
         <MetricsCard
           title="YTD Return"
-          value={`${ytdReturn >= 0 ? '+' : ''}${ytdReturn.toFixed(2)}%`}
+          value={`${ytdReturn >= 0 ? "+" : ""}${ytdReturn.toFixed(2)}%`}
           trend={ytdReturn >= 0 ? "up" : "down"}
           valueColor={ytdReturn >= 0 ? "text-green-600" : "text-red-600"}
         />
       </div>
 
       <div className="mb-8">
-        <PortfolioValueChart data={MOCK_DATA.historicalValues} />
+        <PortfolioValueChart
+          data={monthlyData.map((entry) => ({
+            date: entry.month,
+            value: entry.balance,
+          }))}
+        />
       </div>
 
       <div className="mb-8">
-        <PortfolioHistoryTable data={MOCK_DATA.historicalValues} />
+        <PortfolioHistoryTable data={monthlyData} />
       </div>
     </div>
   );
