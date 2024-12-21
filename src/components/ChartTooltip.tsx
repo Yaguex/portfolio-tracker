@@ -1,24 +1,29 @@
-interface ChartTooltipProps {
+import { Card } from "./ui/card";
+
+interface TooltipProps {
   active?: boolean;
-  payload?: Array<{
-    value: number;
-    payload: {
-      formattedDate: string;
-    };
-  }>;
+  payload?: any[];
+  label?: string;
 }
 
-export function ChartTooltip({ active, payload }: ChartTooltipProps) {
+export function ChartTooltip({ active, payload, label }: TooltipProps) {
   if (!active || !payload?.length) return null;
 
-  const value = payload[0].value;
-  const returnValue = payload[1].value;
+  const dataPoint = payload[0].payload;
 
   return (
-    <div className="bg-background/95 p-2 border rounded-lg shadow-lg">
-      <p className="text-sm font-medium">{payload[0].payload.formattedDate}</p>
-      <p className="text-sm">Value: ${value.toLocaleString()}</p>
-      <p className="text-sm">Return: {returnValue.toFixed(2)}%</p>
-    </div>
+    <Card className="bg-background border p-3 shadow-lg">
+      <div className="space-y-2">
+        <p className="text-sm font-medium">{dataPoint.formattedDate}</p>
+        <div className="space-y-1">
+          <p className="text-sm text-muted-foreground">
+            Value: <span className="font-medium text-foreground">${dataPoint.value.toLocaleString()}</span>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Return: <span className="font-medium text-foreground">{dataPoint.accumulatedReturn.toFixed(2)}%</span>
+          </p>
+        </div>
+      </div>
+    </Card>
   );
 }

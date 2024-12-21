@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { ChartTooltip } from "./ChartTooltip";
-import { ChartDataPoint, formatChartData, findYearChanges, calculateYAxisDomain } from "@/utils/chartDataUtils";
+import { ChartDataPoint, formatChartData, calculateYAxisDomain } from "@/utils/chartDataUtils";
 
 interface PortfolioValueChartProps {
   data: ChartDataPoint[];
@@ -9,15 +9,25 @@ interface PortfolioValueChartProps {
 
 export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
   const formattedData = formatChartData(data);
-  const yearChanges = findYearChanges(formattedData);
   const values = formattedData.map(item => item.value);
   const yAxisDomain = calculateYAxisDomain(values);
 
+  // Common styles for axes
   const axisStyle = {
-    tick: { fill: 'rgb(100 116 139)', fontSize: 11 },
-    tickLine: { stroke: 'rgb(100 116 139)' },
-    axisLine: { stroke: 'rgb(100 116 139)' }
+    stroke: 'rgb(100 116 139)',
+    fontSize: 11,
   };
+
+  // Find year changes for reference lines
+  const yearChanges = formattedData.reduce((acc: string[], item, index) => {
+    if (index === 0) return acc;
+    const currentYear = item.formattedDate.split(' ')[1];
+    const prevYear = formattedData[index - 1].formattedDate.split(' ')[1];
+    if (currentYear !== prevYear) {
+      acc.push(item.formattedDate);
+    }
+    return acc;
+  }, []);
 
   return (
     <Card className="card-gradient">
@@ -28,18 +38,24 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart 
-              data={formattedData} 
+              data={formattedData}
               margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
             >
-              <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                stroke={axisStyle.stroke}
+                opacity={0.2}
+              />
               <XAxis 
                 dataKey="formattedDate"
-                {...axisStyle}
+                stroke={axisStyle.stroke}
+                tick={{ fill: axisStyle.stroke, fontSize: axisStyle.fontSize }}
               />
               <YAxis 
                 yAxisId="value"
                 domain={yAxisDomain}
-                {...axisStyle}
+                stroke={axisStyle.stroke}
+                tick={{ fill: axisStyle.stroke, fontSize: axisStyle.fontSize }}
                 tickFormatter={(value) => `$${(value / 1000)}k`}
               />
               {yearChanges.map((date, index) => (
@@ -47,9 +63,9 @@ export function PortfolioValueChart({ data }: PortfolioValueChartProps) {
                   key={index}
                   x={date}
                   yAxisId="value"
-                  stroke="rgb(100 116 139)"
+                  stroke={axisStyle.stroke}
                   strokeDasharray="3 3"
-                  className="stroke-muted"
+                  opacity={0.2}
                 />
               ))}
               <Tooltip content={ChartTooltip} />
